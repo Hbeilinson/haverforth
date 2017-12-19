@@ -147,7 +147,7 @@ function process(stack, input, terminal) {
       var functionDef = userDef[input];
       print(terminal, "processing user defined function: " + input);
       print(terminal, userDef[input][0]);
-      for (i = 0; i < functionDef.length; i++) {
+      for (var i = 0; i < functionDef.length; i++) {
         process(stack, functionDef[i], terminal);
       }
     } else {
@@ -166,7 +166,7 @@ function runRepl(terminal, stack) {
           userDef[funcName] = in_list.slice(2, in_list.length - 1);
           print (terminal, userDef[funcName].length);
         } else {
-          for (i = 0; i < in_list.length; i++) {
+          for (var i = 0; i < in_list.length; i++) {
             process(stack, in_list[i], terminal);
             print(terminal, i);
           }
