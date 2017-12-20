@@ -145,8 +145,8 @@ function process(stack, input, terminal) {
         words[input](stack);
     } else if (input in userDef) {
       var functionDef = userDef[input];
-      print(terminal, "processing user defined function: " + input);
-      print(terminal, userDef[input][0]);
+      //print(terminal, "processing user defined function: " + input);
+      //print(terminal, userDef[input][0]);
       for (var i = 0; i < functionDef.length; i++) {
         process(stack, functionDef[i], terminal);
       }
@@ -164,11 +164,19 @@ function runRepl(terminal, stack) {
         if (in_list[0] === ":") {
           var funcName = in_list[1];
           userDef[funcName] = in_list.slice(2, in_list.length - 1);
-          print (terminal, userDef[funcName].length);
+          //The following code is based off code from https://jsfiddle.net/mmv1219/koqpzrar/1/ (found on one of the StackOverflow pages linked to in the README)
+          var div = document.getElementById('user-defined-funcs');
+          var btn = document.createElement('button');
+          var txt = document.createTextNode(funcName);
+          btn.appendChild(txt);
+          btn.setAttribute('type', 'button');
+          btn.setAttribute('id', 'button' + funcName);
+          div.appendChild(btn);
+
         } else {
           for (var i = 0; i < in_list.length; i++) {
             process(stack, in_list[i], terminal);
-            print(terminal, i);
+            //print(terminal, i);
           }
         }
         var resetButton = $("#reset");
