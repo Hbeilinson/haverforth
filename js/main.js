@@ -14,6 +14,8 @@ words["="] = equal_to;
 
 var userDef = {};
 
+var userButtons = [];
+
 
 /**
  * Your thoughtful comment here.
@@ -101,6 +103,13 @@ function equal_to(stack) {
   }
 }
 
+function funcButtonClicked(stack, funcBody, terminal) {
+  for (var i = 0; i < funcBody.length; i++) {
+    process(stack, funcBody[i], terminal);
+  }
+}
+
+
 
 
 
@@ -163,15 +172,24 @@ function runRepl(terminal, stack) {
         var in_list = line.trim().split(/ +/);
         if (in_list[0] === ":") {
           var funcName = in_list[1];
-          userDef[funcName] = in_list.slice(2, in_list.length - 1);
+          var funcBody = in_list.slice(2, in_list.length - 1);
+          userDef[funcName] = funcBody;
           //The following code is based off code from https://jsfiddle.net/mmv1219/koqpzrar/1/ (found on one of the StackOverflow pages linked to in the README)
           var div = document.getElementById('user-defined-funcs');
           var btn = document.createElement('button');
           var txt = document.createTextNode(funcName);
+          div.appendChild(btn);
           btn.appendChild(txt);
           btn.setAttribute('type', 'button');
-          btn.setAttribute('id', 'button' + funcName);
-          div.appendChild(btn);
+          btn.setAttribute('id', funcName);
+          var funcButton = $("#" + funcName);
+          funcButton.click(function() {
+            for (var j = 0; j < userDef[funcName].length; j++) {
+              process(stack, userDef[funcName][j], terminal);
+          }
+          });
+          //userButtons.push(btn);
+          // Go look at Piazza!!!
 
         } else {
           for (var i = 0; i < in_list.length; i++) {
@@ -179,6 +197,7 @@ function runRepl(terminal, stack) {
             //print(terminal, i);
           }
         }
+
         var resetButton = $("#reset");
         resetButton.click(function() {
           emptyStack(stack);
@@ -188,6 +207,12 @@ function runRepl(terminal, stack) {
         runRepl(terminal, stack);
     });
 };
+/*
+function funcButtonClicked(stack, functionBody, terminal) {
+  for (var i = 0; i < functionBody.length; i++) {
+    process(stack, functionBody[i], terminal);
+};
+*/
 
 // Whenever the page is finished loading, call this function.
 // See: https://learn.jquery.com/using-jquery-core/document-ready/
