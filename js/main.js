@@ -268,9 +268,23 @@ function runRepl(terminal, stack) {
           btn.setAttribute('id', funcName);
           var funcButton = $("#" + funcName);
           funcButton.click(function() {
-            for (var j = 0; j < userDef[funcName].length; j++) {
-              process(stack, userDef[funcName][j], terminal);
-          }
+            var i = 0;
+            while (i < userDef[funcName].length) { //do stuff
+              var currentToken = userDef[funcName][i];
+              if (currentToken == "if") {
+                if (userDef[funcName].indexOf("endif") >= 0) {
+                  var tokensInIf = userDef[funcName].slice(i, userDef[funcName].indexOf("endif"));
+                  executeIf(stack, tokensInIf, terminal);
+                  i = userDef[funcName].indexOf("endif") + 1;
+                } else {
+                  print(terminal, "You're missing an endif in your function! You oughta fix that.");
+                  i = userDef[funcName].length; //If the endif is missing the user-defined function will stop executing
+                }
+              } else {
+                process(stack, currentToken, terminal);
+                i++;
+              }
+            }
           });
         } else {
           for (var i = 0; i < in_list.length; i++) {
