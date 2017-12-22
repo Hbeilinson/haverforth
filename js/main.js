@@ -54,8 +54,6 @@ class ObservableStack extends Stack {
   }
 }
 
-//Is this okay??? Probably would be good to try to test it before going onto the next step
-
 
 // See the following on using objects as key/value dictionaries
 // https://stackoverflow.com/questions/1208222/how-to-do-associative-array-hashing-in-javascript
@@ -76,9 +74,7 @@ var userDef = {};
 var userButtons = [];
 
 
-/**
- * Your thoughtful comment here.
- */
+
 function emptyStack(stack) {
     //print(terminal, "Got to emptyStack");
     var size = stack.size;
