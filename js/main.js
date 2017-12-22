@@ -169,16 +169,20 @@ function funcButtonClicked(stack, funcBody, terminal) {
 }
 
 function executeIf(stack, listOfItems, terminal) {
-  if (stack.pop() != 0) {
-    var toExecute = listOfItems.slice(1, listOfItems.indexOf("else"));
-    for (var i = 0; i < toExecute.length; i++) {
-      process(stack, toExecute[i], terminal);
+  if (listOfItems.indexOf("else") >= 0) {
+    if (stack.pop() != 0) {
+      var toExecute = listOfItems.slice(1, listOfItems.indexOf("else"));
+      for (var i = 0; i < toExecute.length; i++) {
+        process(stack, toExecute[i], terminal);
+      }
+    } else {
+      var toExecute = listOfItems.slice(listOfItems.indexOf("else") + 1, listOfItems.length);
+      for (var i = 0; i < toExecute.length; i++) {
+        process(stack, toExecute[i], terminal);
+      }
     }
   } else {
-    var toExecute = listOfItems.slice(listOfItems.indexOf("else") + 1, listOfItems.length);
-    for (var i = 0; i < toExecute.length; i++) {
-      process(stack, toExecute[i], terminal);
-    }
+    print(terminal, "You're missing an else to go with your if! You oughta fix that.");
   }
 }
 
@@ -231,9 +235,14 @@ function process(stack, input, terminal) {
       while (i < functionDef.length) { //do stuff
         var currentToken = functionDef[i];
         if (currentToken == "if") {
-          var tokensInIf = functionDef.slice(i, functionDef.indexOf("endif"));
-          executeIf(stack, tokensInIf, terminal);
-          i = functionDef.indexOf("endif") + 1;
+          if (functionDef.indexOf("endif") >= 0) {
+            var tokensInIf = functionDef.slice(i, functionDef.indexOf("endif"));
+            executeIf(stack, tokensInIf, terminal);
+            i = functionDef.indexOf("endif") + 1;
+          } else {
+            print(terminal, "You're missing an endif in your function! You oughta fix that.");
+            i = functionDef.length; //If the endif is missing the user-defined function will stop executing
+          }
         } else {
           process(stack, currentToken, terminal);
           i++;
@@ -242,7 +251,6 @@ function process(stack, input, terminal) {
     } else {
         print(terminal, ":-( Unrecognized input" + input);
     }
-    //renderStack(stack);
 };
 
 function runRepl(terminal, stack) {
@@ -279,7 +287,7 @@ function runRepl(terminal, stack) {
         resetButton.click(function() {
           emptyStack(stack);
           //renderStack(stack);
-          print(terminal, "The stack has been reset");
+          //print(terminal, "The stack has been reset");
         });
         runRepl(terminal, stack);
     });
