@@ -168,7 +168,19 @@ function funcButtonClicked(stack, funcBody, terminal) {
   }
 }
 
-
+function executeIf(stack, listOfItems, terminal) {
+  if (stack.pop() != 0) {
+    var toExecute = listOfItems.slice(1, listOfItems.indexOf("else"));
+    for (var i = 0; i < toExecute.length; i++) {
+      process(stack, toExecute[i], terminal);
+    }
+  } else {
+    var toExecute = listOfItems.slice(listOfItems.indexOf("else") + 1, listOfItems.length);
+    for (var i = 0; i < toExecute.length; i++) {
+      process(stack, toExecute[i], terminal);
+    }
+  }
+}
 
 
 
@@ -215,10 +227,17 @@ function process(stack, input, terminal) {
         words[input](stack);
     } else if (input in userDef) {
       var functionDef = userDef[input];
-      //print(terminal, "processing user defined function: " + input);
-      //print(terminal, userDef[input][0]);
-      for (var i = 0; i < functionDef.length; i++) {
-        process(stack, functionDef[i], terminal);
+      var i = 0;
+      while (i < functionDef.length) { //do stuff
+        var currentToken = functionDef[i];
+        if (currentToken == "if") {
+          var tokensInIf = functionDef.slice(i, functionDef.indexOf("endif"));
+          executeIf(stack, tokensInIf, terminal);
+          i = functionDef.indexOf("endif") + 1;
+        } else {
+          process(stack, currentToken, terminal);
+          i++;
+        }
       }
     } else {
         print(terminal, ":-( Unrecognized input" + input);
@@ -249,9 +268,6 @@ function runRepl(terminal, stack) {
               process(stack, userDef[funcName][j], terminal);
           }
           });
-          //userButtons.push(btn);
-          // Go look at Piazza!!!
-
         } else {
           for (var i = 0; i < in_list.length; i++) {
             process(stack, in_list[i], terminal);
