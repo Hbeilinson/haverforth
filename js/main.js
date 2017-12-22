@@ -1,16 +1,51 @@
 //Super stack class:
 
-class Stack() {
+class Stack {
   constructor() {
     this.rep = [];
+    this.size = 0;
   }
 
   pop() {
-    this.rep = this.pop();
+    this.size = this.size - 1;
+    var top = this.rep[this.rep.length - 1];
+    this.rep.pop();
+    return top;
   }
 
   push(element) {
-    this.rep = this.push(element);
+    this.rep.push(element);
+    this.size = this.size + 1;
+  }
+
+  size() {
+    return this.size;
+  }
+}
+
+class ObservableStack extends Stack {
+  constructor() {
+    super();
+    this.observers = [];
+  }
+  registerObserver(observer) {
+    this.observers.push(observer);
+  }
+  pop() {
+    var top = super.pop();
+    for (var i =0; i < this.observers.length; i++) {
+      this.observers[i];
+    }
+    return top;
+  }
+  push(element) {
+    super.push(element);
+    for (var i =0; i < this.observers.length; i++) {
+      this.observers[i];
+    }
+  }
+  size() {
+    super.size();
   }
 }
 
@@ -146,11 +181,11 @@ function print(terminal, msg) {
 
 /**
  * Sync up the HTML with the stack in memory
- * @param {Array[Number]} The stack to render
+ * @param {Stack} The stack to render
  */
 function renderStack(stack) {
     $("#thestack").empty();
-    stack.slice().reverse().forEach(function(element) {
+    stack.rep.slice().reverse().forEach(function(element) {
         $("#thestack").append("<tr><td>" + element + "</td></tr>");
     });
 };
@@ -158,7 +193,7 @@ function renderStack(stack) {
 /**
  * Process a user input, update the stack accordingly, write a
  * response out to some terminal.
- * @param {Array[Number]} stack - The stack to work on
+ * @param {Stack} stack - The stack to work on
  * @param {string} input - The string the user typed
  * @param {Terminal} terminal - The terminal object
  */
@@ -167,8 +202,9 @@ function process(stack, input, terminal) {
     if (!(isNaN(Number(input)))) {
         print(terminal,"pushing " + Number(input));
         stack.push(Number(input));
-    } else if (input == ".s"){
-      print(terminal, " <" + stack.length + "> " + stack.slice().join(" "));
+    } else if (input == ".s") {
+      var length = stack.size;
+      print(terminal, " <" + length + "> " + stack.rep.slice().join(" "));
     } else if (input in words) {
         words[input](stack);
     } else if (input in userDef) {
@@ -181,7 +217,7 @@ function process(stack, input, terminal) {
     } else {
         print(terminal, ":-( Unrecognized input" + input);
     }
-    renderStack(stack);
+    //renderStack(stack);
 };
 
 function runRepl(terminal, stack) {
@@ -220,7 +256,7 @@ function runRepl(terminal, stack) {
         var resetButton = $("#reset");
         resetButton.click(function() {
           emptyStack(stack);
-          renderStack(stack);
+          //renderStack(stack);
           print(terminal, "The stack has been reset");
         });
         runRepl(terminal, stack);
@@ -244,7 +280,8 @@ $(document).ready(function() {
     // represents the terminal to the end of it.
     $("#terminal").append(terminal.html);
 
-    var stack = [];
+    let stack = new ObservableStack();
+    stack.registerObserver(renderStack);
     print(terminal, "Welcome to HaverForth! v0.1");
     print(terminal, "As you type, the stack (on the right) will be kept in sync");
 
