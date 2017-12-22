@@ -34,18 +34,23 @@ class ObservableStack extends Stack {
   pop() {
     var top = super.pop();
     for (var i =0; i < this.observers.length; i++) {
-      this.observers[i];
+      this.observers[i](this);
     }
     return top;
   }
   push(element) {
     super.push(element);
     for (var i =0; i < this.observers.length; i++) {
-      this.observers[i];
+      //alert("I'm inside the push renderStack loop");
+      this.observers[i](this);
     }
   }
   size() {
-    super.size();
+    return super.size();
+    for (var i =0; i < this.observers.length; i++) {
+      //alert("I'm inside the push renderStack loop");
+      this.observers[i](this);
+    }
   }
 }
 
@@ -76,7 +81,7 @@ var userButtons = [];
  */
 function emptyStack(stack) {
     //print(terminal, "Got to emptyStack");
-    var size = stack.length;
+    var size = stack.size;
     for (i = 0; i < size; i++) {
       stack.pop()
     }
@@ -184,6 +189,7 @@ function print(terminal, msg) {
  * @param {Stack} The stack to render
  */
 function renderStack(stack) {
+    //alert("renderStack has been called");
     $("#thestack").empty();
     stack.rep.slice().reverse().forEach(function(element) {
         $("#thestack").append("<tr><td>" + element + "</td></tr>");
